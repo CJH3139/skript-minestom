@@ -24,7 +24,7 @@ public class EvtDialogClick extends SkriptEvent {
 			.description("""
 				Called when a player clicks a dialog button that carries a custom action, and for any
 				other custom click packet the client sends.
-				Buttons created with the 'create dialog button' section are handled by their own code
+				Buttons created with 'new dialog button ... running code' are handled by their own code
 				instead and never reach this event.
 				The input values of the dialog are available through the 'dialog input' expression when
 				the button used a dynamic custom action.""")

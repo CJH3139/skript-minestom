@@ -1,10 +1,14 @@
-package ch.njol.skript.sections;
+package ch.njol.skript.expressions;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.classes.Changer;
 import ch.njol.skript.config.SectionNode;
 import ch.njol.skript.doc.*;
-import ch.njol.skript.lang.*;
+import ch.njol.skript.expressions.base.SectionExpression;
+import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.ExpressionType;
+import ch.njol.skript.lang.Literal;
+import ch.njol.skript.lang.SkriptParser;
+import ch.njol.skript.lang.TriggerItem;
 import ch.njol.skript.lang.util.SimpleLiteral;
 import ch.njol.skript.util.ComponentWrapper;
 import ch.njol.skript.util.dialog.ButtonWrapper;
@@ -26,9 +30,11 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
-@Name("Create Dialog")
+@Name("New Dialog")
 @Description("""
-	Builds a dialog and optionally stores it in a variable.
+	Builds a dialog. A dialog is a plain value, so it can be stored in a variable, returned from a
+	function or shown directly; use 'register dialog' instead to put one in the server dialog
+	registry under a key.
 
 	Shared entries:
 	title -> component (required)
@@ -45,24 +51,26 @@ import java.util.Map;
 	Dialog list: dialogs -> dialogs, exit button -> dialog button, columns -> number, button width -> number
 	Server links: exit button -> dialog button, columns -> number, button width -> number""")
 @Examples("""
-	create multi action dialog stored in {_d}:
+	set {_shop} to new multi action dialog:
 		title: "<gold>Shop"
 		body: {_greeting}
 		inputs: {_qty}
 		buttons: {_buy}, {_cancel}
 		columns: 2
-	show {_d} to player""")
+	show {_shop} to player
+
+	show (new notice dialog:
+		title: "<gold>Welcome") to player""")
 @Keywords({"dialog"})
-public class EffSecCreateDialog extends EffectSection {
+public class ExprSecDialog extends SectionExpression<DialogWrapper> {
 
 	private static final Map<DialogKind, EntryValidator> VALIDATORS = new EnumMap<>(DialogKind.class);
 
 	static {
 		for (DialogKind kind : DialogKind.values()) VALIDATORS.put(kind, buildValidator(kind));
-		Skript.registerSection(EffSecCreateDialog.class,
-			"create (notice:notice|confirmation:confirmation|multi:multi[ ]action|links:server links) dialog "
-				+ "[(and store it|stored) in %-objects%]",
-			"create dialog list [(and store it|stored) in %-objects%]");
+		Skript.registerExpression(ExprSecDialog.class, DialogWrapper.class, ExpressionType.SIMPLE,
+			"[a] new (notice:notice|confirmation:confirmation|multi:multi[ ]action|links:server links) dialog",
+			"[a] new dialog list");
 	}
 
 	private static EntryValidator buildValidator(DialogKind kind) {
@@ -127,7 +135,7 @@ public class EffSecCreateDialog extends EffectSection {
 	public static @Nullable DialogEntries resolve(DialogKind kind, EntryContainer container) {
 		Expression<ComponentWrapper> title = optional(container, "title");
 		if (title == null) {
-			Skript.error("A dialog creation section needs a 'title' entry.");
+			Skript.error("A dialog needs a 'title' entry.");
 			return null;
 		}
 		Expression<ComponentWrapper> externalTitle = optional(container, "external title");
@@ -168,7 +176,7 @@ public class EffSecCreateDialog extends EffectSection {
 			case DIALOG_LIST -> {
 				dialogs = optional(container, "dialogs");
 				if (dialogs == null) {
-					Skript.error("A dialog list creation section needs a 'dialogs' entry.");
+					Skript.error("A dialog list needs a 'dialogs' entry.");
 					return null;
 				}
 				exitButton = optional(container, "exit button");
@@ -252,15 +260,13 @@ public class EffSecCreateDialog extends EffectSection {
 
 	private DialogKind kind;
 	private DialogEntries entries;
-	private @Nullable Expression<Object> storage;
 
 	@Override
 	public boolean init(Expression<?>[] expressions, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult,
 						@Nullable SectionNode sectionNode, @Nullable List<TriggerItem> triggerItems) {
 		kind = matchedPattern == 1 ? DialogKind.DIALOG_LIST : kindFromTags(parseResult);
-		storage = (Expression<Object>) expressions[0];
 		if (sectionNode == null) {
-			Skript.error("A dialog creation section needs entries inside it.");
+			Skript.error("A dialog needs entries inside it.");
 			return false;
 		}
 		EntryContainer container = validatorFor(kind).validate(sectionNode);
@@ -276,16 +282,30 @@ public class EffSecCreateDialog extends EffectSection {
 		return DialogKind.SERVER_LINKS;
 	}
 
+	/** The entries carry the dialog's content, so there is nothing to build without them. */
 	@Override
-	protected @Nullable TriggerItem walk(Event event) {
-		DialogWrapper dialog = build(kind, entries, event);
-		if (storage != null) storage.change(event, new DialogWrapper[]{dialog}, Changer.ChangeMode.SET);
-		return super.walk(event, false);
+	public boolean isSectionOnly() {
+		return true;
+	}
+
+	@Override
+	protected DialogWrapper @Nullable [] get(Event event) {
+		return new DialogWrapper[]{build(kind, entries, event)};
+	}
+
+	@Override
+	public boolean isSingle() {
+		return true;
+	}
+
+	@Override
+	public Class<? extends DialogWrapper> getReturnType() {
+		return DialogWrapper.class;
 	}
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return "create " + kind.getName() + " dialog" + (storage != null ? (" stored in " + storage.toString(event, debug)) : "");
+		return "new " + kind.getName() + (kind == DialogKind.DIALOG_LIST ? "" : " dialog");
 	}
 
 }

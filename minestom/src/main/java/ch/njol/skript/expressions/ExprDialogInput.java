@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 	a number, and dropdowns return the id of the chosen option.
 	Returns nothing if the dialog had no input under that name.""")
 @Examples("""
-	create dialog button labeled "Buy" stored in {_buy}:
+	set {_buy} to new dialog button labeled "Buy" running code:
 		send "You asked for %dialog input ""qty""%" to player""")
 @Keywords({"dialog", "input"})
 public class ExprDialogInput extends SimpleExpression<Object> {

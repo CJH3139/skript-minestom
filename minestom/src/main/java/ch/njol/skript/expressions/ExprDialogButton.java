@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 @Description("""
 	Creates a button for a dialog with a fixed action.
 	A button with no action just closes the dialog according to its after action setting.
-	Use the 'create dialog button' section instead when the button should run script code.
+	Add 'running code' with a section instead when the button should run script code.
 	A custom action key must be in 'namespace:value' format and is what 'on dialog click' matches on.
 	A dynamic custom action key is the same, but the client sends the dialog's input values back
 	with the click, so 'dialog input' works in an 'on dialog click' handler for it; 'with additions'

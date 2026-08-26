@@ -1134,7 +1134,7 @@ public class MinestomClasses {
 			.name("Dialog")
 			.description("A dialog screen shown to a player.")
 			.examples("""
-				create notice dialog stored in {_d}:
+				set {_d} to new notice dialog:
 					title: "<gold>Welcome"
 				show {_d} to player""")
 			.parser(new Parser<>() {

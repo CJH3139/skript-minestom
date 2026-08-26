@@ -4,11 +4,11 @@ import ch.njol.skript.Skript;
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
 import ch.njol.skript.doc.Name;
+import ch.njol.skript.expressions.ExprSecDialog;
+import ch.njol.skript.expressions.ExprSecDialog.DialogEntries;
 import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.SkriptParser;
 import ch.njol.skript.lang.parser.ParserInstance;
-import ch.njol.skript.sections.EffSecCreateDialog;
-import ch.njol.skript.sections.EffSecCreateDialog.DialogEntries;
 import ch.njol.skript.util.dialog.DialogKind;
 import ch.njol.skript.util.dialog.DialogWrapper;
 import ch.njol.skript.util.dialog.SkriptDialogs;
@@ -27,7 +27,7 @@ import org.skriptlang.skript.lang.structure.Structure;
 @Description("""
 	Builds a dialog and registers it in the server dialog registry under a namespaced key, so it
 	can be shown by key and referenced by other dialogs.
-	Entries are the same as the matching 'create dialog' section.
+	Entries are the same as the matching 'new dialog' section.
 
 	Registry changes do not reach players who are already connected, because they would have to
 	return to the configuration phase first. Use this for dialogs defined at startup, and show
@@ -73,12 +73,12 @@ public class StructRegisterDialog extends Structure {
 			Skript.error("A dialog registration needs entries inside it.");
 			return false;
 		}
-		EntryContainer validated = EffSecCreateDialog.validatorFor(kind).validate(entryContainer.getSource());
+		EntryContainer validated = ExprSecDialog.validatorFor(kind).validate(entryContainer.getSource());
 		if (validated == null) return false;
 
 		ParserInstance parser = getParser();
 		parser.setCurrentEvent("register dialog", RegisterDialogEvent.class);
-		entries = EffSecCreateDialog.resolve(kind, validated);
+		entries = ExprSecDialog.resolve(kind, validated);
 		parser.deleteCurrentEvent();
 
 		return entries != null;
@@ -116,7 +116,7 @@ public class StructRegisterDialog extends Structure {
 			return false;
 		}
 
-		DialogWrapper dialog = EffSecCreateDialog.build(kind, entries, new RegisterDialogEvent());
+		DialogWrapper dialog = ExprSecDialog.build(kind, entries, new RegisterDialogEvent());
 		dialog.setKey(key);
 		registry.register(key, dialog.toMinestom());
 		SkriptDialogs.put(key, dialog, script, this);

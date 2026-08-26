@@ -1,14 +1,18 @@
-package ch.njol.skript.sections;
+package ch.njol.skript.expressions;
 
 import ch.njol.skript.Skript;
-import ch.njol.skript.classes.Changer;
 import ch.njol.skript.config.SectionNode;
 import ch.njol.skript.doc.*;
-import ch.njol.skript.lang.*;
+import ch.njol.skript.events.DialogClickEvent;
+import ch.njol.skript.expressions.base.SectionExpression;
+import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.ExpressionType;
+import ch.njol.skript.lang.SkriptParser;
+import ch.njol.skript.lang.Trigger;
+import ch.njol.skript.lang.TriggerItem;
 import ch.njol.skript.util.ComponentWrapper;
 import ch.njol.skript.util.dialog.ButtonWrapper;
 import ch.njol.skript.util.dialog.DialogCallbacks;
-import ch.njol.skript.events.DialogClickEvent;
 import ch.njol.util.Kleenean;
 import net.kyori.adventure.key.Key;
 import org.bukkit.event.Event;
@@ -16,31 +20,30 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.List;
 
-@Name("Create Dialog Button")
+@Name("New Dialog Button Running Code")
 @Description("""
 	Creates a dialog button whose code runs when a player clicks it.
 	The button sends the dialog's input values back with the click, so 'dialog input' works
 	inside the section. The player who clicked is the event-player.
 	The section runs on the server, so it can do anything a normal trigger can.
+	Use 'new dialog button' without 'running code' for a button with a fixed client-side action.
 	Warning: the button's callback key is live from parse time onward, and any player can send
 	a click for it at any time with arbitrary input values, not just the player it was shown to.
 	Always validate anything read from 'dialog input' before trusting it.""")
 @Examples("""
-	create dialog button labeled "<green>Buy" stored in {_buy}:
+	set {_buy} to new dialog button labeled "<green>Buy" running code:
 		send "You bought %dialog input ""qty""% items!" to player""")
 @Keywords({"dialog", "button"})
-public class EffSecDialogButton extends EffectSection {
+public class ExprSecDialogButton extends SectionExpression<ButtonWrapper> {
 
 	static {
-		Skript.registerSection(EffSecDialogButton.class,
-			"create dialog button labeled %component% [with tooltip %-component%] [with width %-number%] "
-				+ "[(and store it|stored) in %-objects%]");
+		Skript.registerExpression(ExprSecDialogButton.class, ButtonWrapper.class, ExpressionType.COMBINED,
+			"[new] dialog button labeled %component% [with tooltip %-component%] [with width %-number%] running code");
 	}
 
 	private Expression<ComponentWrapper> label;
 	private @Nullable Expression<ComponentWrapper> tooltip;
 	private @Nullable Expression<Number> width;
-	private @Nullable Expression<Object> storage;
 	private Trigger trigger;
 	private Key callbackKey;
 
@@ -51,21 +54,27 @@ public class EffSecDialogButton extends EffectSection {
 		label = (Expression<ComponentWrapper>) expressions[0];
 		tooltip = (Expression<ComponentWrapper>) expressions[1];
 		width = (Expression<Number>) expressions[2];
-		storage = (Expression<Object>) expressions[3];
 		if (sectionNode == null || sectionNode.isEmpty()) {
-			Skript.error("A dialog button section needs code inside it.");
+			Skript.error("A dialog button running code needs code inside it.");
 			return false;
 		}
 		callbackKey = DialogCallbacks.nextKey(getParser().getCurrentScript(), sectionNode);
-		trigger = loadCode(sectionNode, "dialog button", DialogClickEvent.class);
+		// the casts pick the before/after-loading overload over the deprecated one, which a bare null also matches
+		trigger = loadCode(sectionNode, "dialog button", (Runnable) null, (Runnable) null, DialogClickEvent.class);
 		DialogCallbacks.register(callbackKey, trigger, getParser().getCurrentScript());
 		return true;
 	}
 
+	/** 'running code' is the code, so the syntax is meaningless without a section. */
 	@Override
-	protected @Nullable TriggerItem walk(Event event) {
+	public boolean isSectionOnly() {
+		return true;
+	}
+
+	@Override
+	protected ButtonWrapper @Nullable [] get(Event event) {
 		ComponentWrapper labelValue = label.getSingle(event);
-		if (labelValue == null) return super.walk(event, false);
+		if (labelValue == null) return null;
 		ButtonWrapper button = new ButtonWrapper(labelValue.getComponent());
 		if (tooltip != null) {
 			ComponentWrapper single = tooltip.getSingle(event);
@@ -76,13 +85,22 @@ public class EffSecDialogButton extends EffectSection {
 			if (single != null) button.setWidth(single.intValue());
 		}
 		button.setTrigger(trigger, callbackKey);
-		if (storage != null) storage.change(event, new ButtonWrapper[]{button}, Changer.ChangeMode.SET);
-		return super.walk(event, false);
+		return new ButtonWrapper[]{button};
+	}
+
+	@Override
+	public boolean isSingle() {
+		return true;
+	}
+
+	@Override
+	public Class<? extends ButtonWrapper> getReturnType() {
+		return ButtonWrapper.class;
 	}
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return "create dialog button labeled " + label.toString(event, debug);
+		return "dialog button labeled " + label.toString(event, debug) + " running code";
 	}
 
 }
