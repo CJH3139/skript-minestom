@@ -54,6 +54,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.h2.util.Utils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -86,6 +87,9 @@ public class SkriptMinestom {
 		properties = PropertyUtils.loadServerProperties();
 		initMinestomProperties();
 		MinecraftServer server = MinecraftServer.init(PropertyUtils.getAuth(properties));
+		if (!Utils.parseBoolean(properties.getProperty(LOG_MINESTOM_EXCEPTIONS), true, false)) {
+			MinecraftServer.getExceptionManager().setExceptionHandler(_ -> {});
+		}
 
 		luckPerms = initLuckPerms();
 		spark = initSpark();
