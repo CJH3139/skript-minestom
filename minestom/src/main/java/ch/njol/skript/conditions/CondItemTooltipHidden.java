@@ -17,8 +17,9 @@ import org.eclipse.jdt.annotation.Nullable;
 @Name("Item Tooltip Hidden")
 @Description("""
 	Whether the tooltip of an item is hidden.
-	An item only counts as having its additional tooltip hidden if every part of it is hidden, \
-	so an item that merely has its entire tooltip hidden doesn't match.""")
+	The additional tooltip covers the same parts as the hide additional tooltip item flag, and an \
+	item only counts as having it hidden if every one of those parts is hidden, so an item \
+	that merely has its entire tooltip hidden doesn't match.""")
 @Examples("""
 	if player's tool has its entire tooltip hidden:
 		send "you can't see what that is!"

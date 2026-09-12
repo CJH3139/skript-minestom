@@ -81,8 +81,7 @@ public enum ItemFlag {
 	}
 
 	public static Set<DataComponent<?>> getHiddenComponents(ItemStack item) {
-		TooltipDisplay display = item.get(DataComponents.TOOLTIP_DISPLAY);
-		return display == null ? Set.of() : display.hiddenComponents();
+		return ItemTooltip.getDisplay(item).hiddenComponents();
 	}
 
 	/**
@@ -90,16 +89,7 @@ public enum ItemFlag {
 	 * (currently only {@link TooltipDisplay#hideTooltip()}) untouched.
 	 */
 	private static void apply(Item item, Set<DataComponent<?>> hidden, boolean notify) {
-		item.modify(stack -> {
-			TooltipDisplay display = stack.get(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.EMPTY);
-			TooltipDisplay newDisplay = new TooltipDisplay(display.hideTooltip(), hidden);
-			TooltipDisplay prototype = stack.material().prototype()
-				.get(DataComponents.TOOLTIP_DISPLAY, TooltipDisplay.EMPTY);
-			// don't leave an explicit override behind if it's what the material does anyway,
-			// otherwise an item that had all of its flags removed wouldn't equal a plain one
-			if (newDisplay.equals(prototype)) return stack.reset(DataComponents.TOOLTIP_DISPLAY);
-			return stack.with(DataComponents.TOOLTIP_DISPLAY, newDisplay);
-		}, notify);
+		ItemTooltip.modify(item, display -> new TooltipDisplay(display.hideTooltip(), hidden), notify);
 	}
 
 }

@@ -19,8 +19,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @Description("""
 	An item with its tooltip hidden, or shown again.
 	The entire tooltip hides everything, including the name and lore of the item.
-	The additional tooltip hides everything but the name and lore, such as potion effects, \
-	banner patterns, attribute modifiers and the contents of a container.""")
+	The additional tooltip hides the same parts as the hide additional tooltip item flag, \
+	such as potion effects, banner patterns and the contents of a container.""")
 @Examples("""
 	give player stone without entire tooltip
 	give player potion of healing without its additional tooltip
