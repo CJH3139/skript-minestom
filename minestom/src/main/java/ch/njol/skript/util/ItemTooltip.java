@@ -15,11 +15,9 @@ public final class ItemTooltip {
 	}
 
 	public static void setAdditionalHidden(Item item, boolean hidden) {
-		if (hidden) {
-			ItemFlag.add(item, true, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
-		} else {
-			ItemFlag.remove(item, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
-		}
+		if (hidden) ItemFlag.add(item, true, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+		else ItemFlag.remove(item, ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
+
 	}
 
 	public static boolean isEntireHidden(Item item) {
@@ -31,8 +29,7 @@ public final class ItemTooltip {
 	 * entire tooltip hidden doesn't count, as showing the tooltip again would reveal them.
 	 */
 	public static boolean isAdditionalHidden(Item item) {
-		return ItemFlag.getHiddenComponents(item.getItem())
-					   .containsAll(ItemFlag.HIDE_ADDITIONAL_TOOLTIP.getDataComponents());
+		return ItemFlag.getHiddenComponents(item.getItem()).containsAll(ItemFlag.HIDE_ADDITIONAL_TOOLTIP.getDataComponents());
 	}
 
 	public static TooltipDisplay getDisplay(DataComponent.Holder holder) {
@@ -42,8 +39,7 @@ public final class ItemTooltip {
 	public static void modify(Item item, UnaryOperator<TooltipDisplay> modifyFunction, boolean notify) {
 		item.modify(stack -> {
 			TooltipDisplay display = modifyFunction.apply(getDisplay(stack));
-			if (display.equals(getDisplay(stack.material().prototype())))
-				return stack.reset(DataComponents.TOOLTIP_DISPLAY);
+			if (display.equals(getDisplay(stack.material().prototype()))) return stack.reset(DataComponents.TOOLTIP_DISPLAY);
 			return stack.with(DataComponents.TOOLTIP_DISPLAY, display);
 		}, notify);
 	}

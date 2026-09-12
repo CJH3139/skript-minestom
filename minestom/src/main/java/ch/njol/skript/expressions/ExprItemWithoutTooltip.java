@@ -30,7 +30,7 @@ public class ExprItemWithoutTooltip extends SimpleExpression<Item> {
 
 	static {
 		Skript.registerExpression(ExprItemWithoutTooltip.class, Item.class, ExpressionType.COMBINED,
-			"%items% with[:out] [the|its|their] (entire|:additional) tool[ ]tip");
+			"%items% with[:out] [the|its|their] (entire|:additional) tool[ ]tip[s]");
 	}
 
 	private Expression<Item> items;
@@ -53,11 +53,8 @@ public class ExprItemWithoutTooltip extends SimpleExpression<Item> {
 		Item[] modified = new Item[items.length];
 		for (int i = 0; i < items.length; i++) {
 			Item item = items[i].copy();
-			if (additional) {
-				ItemTooltip.setAdditionalHidden(item, hidden);
-			} else {
-				ItemTooltip.setEntireHidden(item, hidden);
-			}
+			if (additional) ItemTooltip.setAdditionalHidden(item, hidden);
+			else ItemTooltip.setEntireHidden(item, hidden);
 			modified[i] = item;
 		}
 		return modified;
@@ -75,8 +72,7 @@ public class ExprItemWithoutTooltip extends SimpleExpression<Item> {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return items.toString(event, debug) + (hidden ? " without " : " with ")
-			+ (additional ? "additional" : "entire") + " tooltip";
+		return items.toString(event, debug) + (hidden ? " without " : " with ") + (additional ? "additional" : "entire") + " tooltip";
 	}
 
 }

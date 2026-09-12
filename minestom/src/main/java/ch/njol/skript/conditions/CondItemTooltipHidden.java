@@ -31,8 +31,8 @@ public class CondItemTooltipHidden extends Condition {
 
 	static {
 		Skript.registerCondition(CondItemTooltipHidden.class,
-			"%items% (has|have) [its|their] (entire|:additional) tool[ ]tip hidden",
-			"%items% (doesn't|does not|don't|do not) have [its|their] (entire|:additional) tool[ ]tip hidden");
+			"%items% (has|have) [its|their] (entire|:additional) tool[ ]tip[s] hidden",
+			"%items% (doesn't|does not|don't|do not) have [its|their] (entire|:additional) tool[ ]tip[s] hidden");
 	}
 
 	private Expression<Item> items;
@@ -57,8 +57,7 @@ public class CondItemTooltipHidden extends Condition {
 
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
-		return items.toString(event, debug) + (isNegated() ? " doesn't have " : " has ")
-			+ (additional ? "additional" : "entire") + " tooltip hidden";
+		return items.toString(event, debug) + (isNegated() ? " doesn't have " : " has ") + (additional ? "additional" : "entire") + " tooltip hidden";
 	}
 
 }

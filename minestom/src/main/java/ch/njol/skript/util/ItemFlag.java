@@ -48,22 +48,25 @@ public enum ItemFlag {
 
 	public static void add(Item to, boolean notify, ItemFlag... flags) {
 		Set<DataComponent<?>> hidden = new HashSet<>(getHiddenComponents(to.getItem()));
-		for (ItemFlag flag : flags)
+		for (ItemFlag flag : flags) {
 			hidden.addAll(flag.dataComponents);
+		}
 		apply(to, hidden, notify);
 	}
 
 	public static void set(Item to, ItemFlag... flags) {
 		Set<DataComponent<?>> hidden = new HashSet<>();
-		for (ItemFlag flag : flags)
+		for (ItemFlag flag : flags) {
 			hidden.addAll(flag.dataComponents);
+		}
 		apply(to, hidden, true);
 	}
 
 	public static void remove(Item from, ItemFlag... flags) {
 		Set<DataComponent<?>> hidden = new HashSet<>(getHiddenComponents(from.getItem()));
-		for (ItemFlag flag : flags)
+		for (ItemFlag flag : flags) {
 			hidden.removeAll(flag.dataComponents);
+		}
 		apply(from, hidden, true);
 	}
 
