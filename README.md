@@ -45,16 +45,18 @@ We don't offer support for addons on this repository. If there is an issue with 
 If you are an addon developer and need help developing an addon, you can take a look at the [in-house addons in this organization](https://github.com/orgs/skript-minestom/repositories)
 or ask for help in [the discord](https://discord.gg/NAzscWaFRg).
 
-## Official Tool Roadmap
+## Tool Roadmap
 - [x] **[ADDON]** [skript-reflect (non-fork) 2.6.3 support](https://github.com/SkriptLang/skript-reflect/releases/tag/v2.6.3)
 - [x] **[ADDON]** [oopsk (non-fork) 1.0-beta2 support](https://github.com/sovdeeth/oopsk/releases/tag/1.0-beta2)
 - [x] **[ADDON]** [skript-bdengine](https://github.com/skript-minestom/skript-bdengine)
+- [x] **[ADDON]** [skript-combat](https://github.com/skript-minestom/skript-combat) (WIP, but working)
+- [x] **[ADDON]** [skript-nbs](https://github.com/skript-minestom/skript-nbs)
 - [x] **[ADDON]** [skript-gui-minestom](https://github.com/skript-minestom/skript-gui-minestom)
 - [x] **[ADDON]** [SkriptHubDocsTool (fork for skript-minestom)](https://github.com/skript-minestom/SkriptHubDocsTool)
 - [x] **[ADDON]** [SKNoise (fork for skript-minestom)](https://github.com/skript-minestom/SKNoise)
 - [x] **[ADDON]** [SkCheese-minestom](https://github.com/skript-minestom/SkCheese-minestom)
+- [x] **[ADDON]** [skript-tebex](https://github.com/CJH3139/skript-tebex)
 - [ ] **[ADDON]** skript-blocks (vanilla placement rules, fluid/farming crop mechanics, etc.)
-- [ ] **[ADDON]** skript-tebex (Tebex integration for skript-minestom)
 - [ ] **[SNIPPET]** Minimal Discord bot integration through skript-reflect
 
 ## Contributing
