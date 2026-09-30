@@ -1937,8 +1937,7 @@ public class MinestomClasses {
 				protected @NotNull Weather deserialize(@NotNull Fields f) throws StreamCorruptedException {
 					float rain = f.getPrimitive("rain", float.class);
 					float thunder = f.getPrimitive("thunder", float.class);
-					if (!isLevel(rain) || !isLevel(thunder))
-						throw new StreamCorruptedException("Weather levels have to be between 0 and 1");
+					if (!isLevel(rain) || !isLevel(thunder)) throw new StreamCorruptedException("Weather levels have to be between 0 and 1");
 					return new Weather(rain, thunder);
 				}
 
