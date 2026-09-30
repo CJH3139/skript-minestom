@@ -41,11 +41,8 @@ public class EffTransitionWorldBorder extends Effect {
 	@Override
 	public boolean init(Expression<?>[] expressions, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
 		instances = (Expression<Instance>) expressions[0];
-		if (matchedPattern == 0) {
-			border = (Expression<WorldBorder>) expressions[1];
-		} else {
-			diameter = (Expression<Number>) expressions[1];
-		}
+		if (matchedPattern == 0) border = (Expression<WorldBorder>) expressions[1];
+		else diameter = (Expression<Number>) expressions[1];
 		duration = (Expression<Timespan>) expressions[2];
 		return true;
 	}
