@@ -43,13 +43,9 @@ public class ExprWorldBorderNumber extends SimplePropertyExpression<Object, Numb
 
 	@Override
 	public boolean init(Expression<?>[] expressions, int matchedPattern, Kleenean isDelayed, SkriptParser.ParseResult parseResult) {
-		if (parseResult.hasTag("warning")) {
-			property = Property.WARNING_DISTANCE;
-		} else if (parseResult.hasTag("boundary")) {
-			property = Property.TELEPORT_BOUNDARY;
-		} else {
-			property = Property.DIAMETER;
-		}
+		if (parseResult.hasTag("warning")) property = Property.WARNING_DISTANCE;
+		else if (parseResult.hasTag("boundary")) property = Property.TELEPORT_BOUNDARY;
+		else property = Property.DIAMETER;
 		return super.init(expressions, matchedPattern, isDelayed, parseResult);
 	}
 
