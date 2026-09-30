@@ -75,11 +75,8 @@ public class EffTransitionWorldBorder extends Effect {
 	@Override
 	public String toString(@Nullable Event event, boolean debug) {
 		SyntaxStringBuilder sb = new SyntaxStringBuilder(event, debug);
-		if (border != null) {
-			sb.append("transition world border of", instances, "to", border);
-		} else {
-			sb.append("resize world border of", instances, "to", diameter);
-		}
+		if (border != null) sb.append("transition world border of", instances, "to", border);
+		else sb.append("resize world border of", instances, "to", diameter);
 		sb.append("over", duration);
 		return sb.toString();
 	}
