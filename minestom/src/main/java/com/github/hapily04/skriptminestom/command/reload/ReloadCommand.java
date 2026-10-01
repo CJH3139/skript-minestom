@@ -114,6 +114,10 @@ public class ReloadCommand extends Command {
 					if (file.isHidden())
 						return;
 
+					// Scripts inside a disabled directory aren't enabled, even if their own name isn't prefixed
+					if (!enable && isInDisabledDirectory(file, scripts))
+						return;
+
 					String fileString = file.toString().substring(scriptsPathLength);
 					if (fileString.isEmpty())
 						return;
@@ -136,6 +140,14 @@ public class ReloadCommand extends Command {
 			//noinspection ThrowableNotThrown
 			Skript.exception(e, "An error occurred while trying to update the list of disabled scripts!");
 		}
+	}
+
+	private static boolean isInDisabledDirectory(File file, File scriptsFolder) {
+		for (File parent = file.getParentFile(); parent != null && !parent.equals(scriptsFolder); parent = parent.getParentFile()) {
+			if (parent.getName().startsWith(ScriptLoader.DISABLED_SCRIPT_PREFIX))
+				return true;
+		}
+		return false;
 	}
 
 	public static void fileNotFoundMessage(CommandSender sender, String fileInQuestion) {

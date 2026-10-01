@@ -8,6 +8,7 @@ import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.ExpressionType;
 import ch.njol.skript.lang.Literal;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.skript.lang.Variable;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.skript.util.ComponentWrapper;
 import ch.njol.skript.util.InventoryType;
@@ -40,6 +41,10 @@ public class ExprNewInventory extends SimpleExpression<AbstractInventory>{
 	public boolean init(Expression<?>[] exprs, int matchedPattern, Kleenean kleenean, ParseResult parseResult) {
 		inventoryType = (Expression<InventoryType>) exprs[0];
 		name = (Expression<ComponentWrapper>) exprs[1];
+
+		// an untyped expression (e.g. skript-reflect's "new proxy instance of ...") would otherwise be swallowed here
+		Expression<?> source = inventoryType.getSource();
+		if (source.getReturnType() == Object.class && !(source instanceof Variable<?>) && !(source instanceof Literal<?>)) return false;
 
 		if (inventoryType instanceof Literal<InventoryType> literal && literal.getSingle() == InventoryType.PLAYER) {
 			Skript.error("Cannot create virtual inventory of type 'player'.");

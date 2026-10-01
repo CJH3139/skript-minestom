@@ -47,6 +47,7 @@ public class BukkitSchedulerImpl implements BukkitScheduler {
 			} catch (Throwable t) {
 				Bukkit.getLogger().log(java.util.logging.Level.SEVERE,
 					"Task " + taskID + " from " + task.getOwner().getName() + " threw an exception", t);
+				t.printStackTrace();
 			}
 
 			currentTask = null;
@@ -63,6 +64,7 @@ public class BukkitSchedulerImpl implements BukkitScheduler {
 
 	@Override
 	public void runTask(Plugin plugin, Consumer<? super BukkitTask> task) {
+		validate(plugin, task);
 		var bukkitTask = new BukkitTask() {
 			private final Runnable runnable = () -> task.accept(this);
 			public final Task delegate = new Task(plugin, runnable, false, 0L, null);
@@ -106,6 +108,7 @@ public class BukkitSchedulerImpl implements BukkitScheduler {
 
 	@Override
 	public void runTaskLater(Plugin plugin, Consumer<? super BukkitTask> task, long delay) {
+		validate(plugin, task);
 		var bukkitTask = new BukkitTask() {
 			private final Runnable runnable = () -> task.accept(this);
 			public final Task delegate = new Task(plugin, runnable, false, delay, null);
@@ -200,8 +203,14 @@ public class BukkitSchedulerImpl implements BukkitScheduler {
 	}
 
 	private BukkitTask scheduleTask(Plugin owner, Runnable runnable, boolean async, long delay, @Nullable Long duration) {
+		validate(owner, runnable);
 		Task task = new Task(owner, runnable, async, delay, duration);
 		pendingTasks.add(task);
 		return task;
+	}
+
+	private static void validate(Plugin plugin, Object task) {
+		if (plugin == null) throw new IllegalArgumentException("Plugin cannot be null");
+		if (task == null) throw new IllegalArgumentException("Task cannot be null");
 	}
 }

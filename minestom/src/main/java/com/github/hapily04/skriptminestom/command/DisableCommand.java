@@ -16,11 +16,9 @@ import static com.github.hapily04.skriptminestom.command.reload.ReloadCommand.fi
 import static com.github.hapily04.skriptminestom.command.reload.ReloadCommand.initSuggestions;
 import static com.github.hapily04.skriptminestom.util.MessageUtils.SKRIPT_MINI_MESSAGE;
 
-// todo fix suggestions for this command
-// todo make disabling not temporary (- in file name)
 public class DisableCommand extends Command {
 
-	private static final Component DISABLE_USAGE = SKRIPT_MINI_MESSAGE.deserialize("<skript_minestom_tag> <error_color>Usage: /skript disable <file>");
+	private static final Component DISABLE_USAGE = SKRIPT_MINI_MESSAGE.deserialize("<skript_minestom_tag> <error_color>Usage: /skript disable <folder/file>");
 
 	public DisableCommand() {
 		super("disable");
@@ -38,12 +36,15 @@ public class DisableCommand extends Command {
 				fileNotFoundMessage(sender, originalProvidedLocation);
 				return;
 			}
-			Script script = ScriptLoader.getScript(scriptFile);
-			if (script == null || !ScriptLoader.getLoadedScripts().contains(script)) {
-				sender.sendMessage(SKRIPT_MINI_MESSAGE.deserialize("<skript_minestom_tag> <error_color>File '<yellow>" + originalProvidedLocation + "<error_color>' isn't an enabled script!"));
+			if (scriptFile.getName().startsWith(ScriptLoader.DISABLED_SCRIPT_PREFIX)) {
+				sender.sendMessage(SKRIPT_MINI_MESSAGE.deserialize("<skript_minestom_tag> <yellow>" + originalProvidedLocation + " <error_color>is already disabled."));
 				return;
 			}
-			ScriptLoader.unloadScript(script);
+			if (scriptFile.isDirectory()) ScriptLoader.unloadScripts(ScriptLoader.getScripts(scriptFile));
+			else {
+				Script script = ScriptLoader.getScript(scriptFile);
+				if (script != null) ScriptLoader.unloadScript(script);
+			}
 			try {
 				FileUtils.move(
 					scriptFile,
