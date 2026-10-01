@@ -22,16 +22,16 @@ import static ch.njol.skript.expressions.ExprWorldBorder.changeBorders;
 	A number making up a world border, either of a world border itself or of the one an instance is using. \
 	The diameter can't go below 0, and neither can the warning distance or the teleport boundary. \
 	Resetting one restores it to the value the default world border uses. \
-	Only the numbers of an instance's border can be changed, as a world border itself can't be modified.""")
+	Only the numbers of an instance's border can be changed, as a world border itself can't be modified. 	'size' always needs the 'world border' prefix, as 'size of' on its own is the amount of a list.""")
 @Examples("""
 	set diameter of world border of {_instance} to 100
-	add 50 to size of {_instance}'s world border
+	add 50 to world border size of {_instance}
 	set warning distance of world border of {_instance} to 8""")
 public class ExprWorldBorderNumber extends SimplePropertyExpression<Object, Number> {
 
 	static {
 		register(ExprWorldBorderNumber.class, Number.class,
-			"[world border] (diameter|size|warning:warning distance|boundary:dimension teleport boundary)",
+			"([world] border size|[world border] (diameter|warning:warning distance|boundary:dimension teleport boundary))",
 			"worldborders/instances");
 	}
 
