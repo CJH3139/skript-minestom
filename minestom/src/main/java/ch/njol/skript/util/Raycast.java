@@ -7,11 +7,13 @@ import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.utils.block.BlockIterator;
 import org.eclipse.jdt.annotation.Nullable;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 public record Raycast(Kind kind, Point origin, Vec direction, double range, Instance instance,
 					  @Nullable Point hitPosition, @Nullable BlockVec hitBlockPosition, @Nullable Block hitBlock,
@@ -51,18 +53,25 @@ public record Raycast(Kind kind, Point origin, Vec direction, double range, Inst
 		return new Raycast(kind, origin, direction, range, instance, null, null, null, null, null, range);
 	}
 
+	private static final List<BoundingBox> CUBE = List.of(new BoundingBox(Vec.ZERO, Vec.ONE));
+
+	private static final Function<Block, List<BoundingBox>> SOLID_BLOCK_HITBOXES =
+		block -> block.collisionShape().boundingBoxes();
+
+	private static final Function<Block, List<BoundingBox>> CUBE_HITBOXES =
+		block -> block.isAir() ? List.of() : CUBE;
+
 	private static @Nullable Hit castBlock(Instance instance, Point origin, Vec direction, double range,
 										   boolean stopAtAnyBlock) {
-		BlockLineIterator iterator = new BlockLineIterator(origin, direction, range);
+		Function<Block, List<BoundingBox>> hitboxGetter = stopAtAnyBlock ? CUBE_HITBOXES : SOLID_BLOCK_HITBOXES;
+		BlockIterator iterator = new BlockIterator(origin.asVec(), direction, 0, range);
 		while (iterator.hasNext()) {
-			BlockVec position = iterator.next();
+			BlockVec position = iterator.next().asBlockVec();
 			if (instance.getChunkAt(position) == null) return null;
 			Block block = instance.getBlock(position);
 			if (block.isAir()) continue;
 
-			List<BoundingBox> boxes = stopAtAnyBlock
-				? List.of(new BoundingBox(1, 1, 1, Vec.ZERO))
-				: block.collisionShape().boundingBoxes();
+			List<BoundingBox> boxes = hitboxGetter.apply(block);
 			if (boxes.isEmpty()) continue;
 
 			Hit closest = null;
