@@ -91,7 +91,12 @@ public class ExprNBTTag extends SimpleExpression<Object> {
 	@Override
 	public @Nullable Class<?>[] acceptChange(Changer.ChangeMode mode) {
 		return switch (mode) {
-			case REMOVE, ADD, SET -> CollectionUtils.array(getReturnType());
+			case REMOVE, ADD, SET -> {
+				Class<?> returnType = getReturnType();
+				// list/array tags (or a non-literal tag type) accept multiple values
+				if (literalTagType == null || literalTagType.getSkriptCompatibleClass().isArray()) yield CollectionUtils.array(returnType.arrayType());
+				yield CollectionUtils.array(returnType);
+			}
 			case DELETE -> CollectionUtils.array(Object.class);
 			default -> null;
 		};
@@ -121,8 +126,7 @@ public class ExprNBTTag extends SimpleExpression<Object> {
 								objects.addAll(Arrays.asList(delta));
 								yield NBTUtils.TagType.convertFromSkript(objects.toArray());
 							} else if (tagType.getSkriptCompatibleClass().isArray()) {
-								objects = new ArrayList<>();
-								objects.add(delta);
+								objects = new ArrayList<>(Arrays.asList(delta));
 								yield NBTUtils.TagType.convertFromSkript(objects.toArray());
 							}
 							Object object = delta[0];

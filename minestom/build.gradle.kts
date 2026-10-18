@@ -11,7 +11,7 @@ version = rootProject.version
 repositories {
     mavenCentral()
 	maven("https://maven.conceptmc.com/releases") // luckperms
-	maven("https://repo.hypera.dev/snapshots/") // spark (& was luckperms)
+	maven("https://raw.githubusercontent.com/WindPvP/spark/maven/") // spark
 	maven("https://repo.lucko.me/")
 	maven("https://maven.hapily.me/releases")
 	maven("https://maven.hapily.me/snapshots")
@@ -27,7 +27,7 @@ dependencies {
 	implementation("it.unimi.dsi:fastutil:8.5.18") // fix polar error
 	api("com.conceptmc:luckperms-minestom:5.5-SNAPSHOT")
 	implementation("com.h2database:h2:2.2.224") // fix luckperms cause it's lowkey being stupid
-	api("dev.lu15:spark-minestom:1.10-SNAPSHOT")
+	api("ga.windpvp:spark-minestom:1.10.165-3")
 	implementation("org.spongepowered:configurate-hocon:3.7.2") // configuration using hocon
 	implementation("org.jline:jline:3.28.0") // part of terminal implementation
 	compileOnly("org.jetbrains:annotations:26.0.2")

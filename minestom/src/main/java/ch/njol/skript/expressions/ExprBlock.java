@@ -72,8 +72,10 @@ public class ExprBlock extends SimpleExpression<Block> {
 		Instance instance = instanceExpr.getSingle(event);
 		if (instance == null) return;
 		Point[] points = pointExpr.getArray(event);
+		boolean autoLoad = instance.hasEnabledAutoChunkLoad();
 		for (Point p : points) {
-			if (!instance.isChunkLoaded(p)) continue;
+			// minestom loads the chunk itself when auto chunk load is enabled and throws otherwise
+			if (!autoLoad && !instance.isChunkLoaded(p)) continue;
 			instance.setBlock(p, block, update);
 		}
 	}
