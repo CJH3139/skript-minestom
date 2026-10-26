@@ -56,11 +56,8 @@ public class EffCancelEvent extends Effect {
 
 	@Override
 	public void execute(final Event e) {
-		if (e instanceof Cancellable cancellable) {
-			cancellable.setCancelled(cancel);
-		} else if (e instanceof EventWrapper<?> wrapper && wrapper.getEvent() instanceof CancellableEvent cancellable) {
-			cancellable.setCancelled(cancel);
-		}
+		if (e instanceof Cancellable cancellable) cancellable.setCancelled(cancel);
+		else if (e instanceof EventWrapper<?> wrapper && wrapper.getEvent() instanceof CancellableEvent cancellable) cancellable.setCancelled(cancel);
 	}
 
 	@Override
